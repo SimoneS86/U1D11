@@ -1,0 +1,104 @@
+-- Creazione della tabella Clienti
+CREATE TABLE Clienti (
+  NumeroCliente INT PRIMARY KEY,
+  Nome VARCHAR(20),
+  Cognome VARCHAR(20),
+  DataNascita DATE,
+  RegioneResidenza VARCHAR(20)
+);
+
+-- Creazione della tabella Fatture
+CREATE TABLE Fatture (
+  NumeroFattura INT PRIMARY KEY,
+  Tipologia VARCHAR(20),
+  Importo DECIMAL(10, 2),
+  Iva DECIMAL(5, 2),
+  idCliente INT,
+  DataFattura DATE,
+  NumeroFornitore INT,
+  FOREIGN KEY (idCliente) REFERENCES Clienti(NumeroCliente),
+  FOREIGN KEY (NumeroFornitore) REFERENCES Fornitori(NumeroFornitore)
+);
+
+-- Creazione della tabella Prodotti
+CREATE TABLE Prodotti (
+  IdProdotto INT PRIMARY KEY,
+  Descrizione VARCHAR(100),
+  InProduzione BOOLEAN,
+  InCommercio BOOLEAN,
+  DataAttivazione DATE,
+  DataDisattivazione DATE
+);
+
+-- Creazione della tabella Fornitori
+CREATE TABLE Fornitori (
+  NumeroFornitore INT PRIMARY KEY,
+  Denominazione VARCHAR(100),
+  RegioneResidenza VARCHAR(20)
+);
+
+1)
+SELECT Nome, Cognome
+FROM Clienti
+WHERE YEAR(DataNascita) = 1982;
+
+2)
+SELECT COUNT(*) AS NumeroFattureIVA20
+FROM Fatture
+WHERE Iva = 20;
+
+3)
+SELECT YEAR(DataFattura) AS AnnoFatturazione, COUNT(*) AS NumeroFatture, SUM(Importo) AS SommaImporti
+FROM Fatture
+GROUP BY YEAR(DataFattura);
+
+4)
+SELECT *
+FROM Prodotti
+WHERE YEAR(DataAttivazione) = 2017 AND (InProduzione = 1 OR InCommercio = 1);
+
+5)
+SELECT YEAR(DataFattura) AS AnnoFattura, COUNT(*) AS NumeroFatture
+FROM Fatture
+WHERE Iva = 20
+GROUP BY YEAR(DataFattura);
+
+6)
+SELECT YEAR(DataFattura) AS AnnoFattura
+FROM Fatture
+WHERE Tipologia = 'A'
+GROUP BY YEAR(DataFattura)
+HAVING COUNT(*) > 2;
+
+7)
+SELECT F.NumeroFattura, F.Importo, F.Iva, F.DataFattura, Fo.Denominazione AS NomeFornitore
+FROM Fatture F
+JOIN Fornitori Fo ON F.NumeroFornitore = Fo.NumeroFornitore;
+
+8)
+SELECT C.RegioneResidenza, SUM(F.Importo) AS TotaleImporti
+FROM Clienti C
+JOIN Fatture F ON C.NumeroCliente = F.idCliente
+GROUP BY C.RegioneResidenza;
+
+9)
+SELECT COUNT(DISTINCT C.NumeroCliente) AS NumeroClienti
+FROM Clienti C
+JOIN Fatture F ON C.NumeroCliente = F.idCliente
+WHERE YEAR(C.DataNascita) = 1980 AND F.Importo > 50;
+
+10)
+SELECT CONCAT(Nome, '-', Cognome) AS Denominazione
+FROM Clienti
+WHERE RegioneResidenza = 'Lombardia';
+
+
+
+
+
+
+
+
+
+
+
